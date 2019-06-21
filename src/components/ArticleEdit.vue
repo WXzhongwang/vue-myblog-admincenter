@@ -7,12 +7,12 @@
             <div class="label">
                 <el-popover ref="tag" placement="top-start" width="150" trigger="click">
                     <ul class="tag-list-wrap">
-                        <li v-for="item in tags" @click="selectTag(item)">{{item.tagName}}</li>
+                        <li v-for="item in tags" @click="selectTag(item)">{{item.name}}</li>
                     </ul>
                 </el-popover>
                 <img src="@/assets/tag.png" height="30" width="30" v-popover:tag>
                 <el-tag v-for="(item,index) in list" :closable="true" type="success" :key="index" :close-transition="false" @close="handleClose(tag)">
-                    {{item.tagName}}
+                    {{item.name}}
                 </el-tag>
             </div>
             <div class="action-button">
@@ -90,15 +90,19 @@ export default {
 
 
         if(this.$route.query.id){
-            this.$http.post('/api/articleDetails', {
-                id: this.$route.query.id
-            }).then(
+            //console.log(this.$route.query.id)
+            this.$axios.get('/articles/' + this.$route.query.id).then(
                 respone => {
-                    this.articleTitle = respone.body.title,
-                    this.list.push({
-                        tagName: respone.body.label
-                    }),
-                    smde.value(respone.body.articleContent)
+                    let articleDetail = respone.data.data
+                    this.articleTitle = articleDetail.title,
+                    articleDetail.tags.forEach(function(item, index){
+                        //this.list.push({
+                        //    tagName: item.name
+                        //})
+                        this.list.push(item);
+                    })
+                    
+                    smde.value(articleDetail.content)
                 },
                 respone => console.log(respone)
             )
@@ -107,20 +111,20 @@ export default {
         }
 
         // 请求标签数据列表
-        this.$http.get('/api/getArticleLabel').then(
+        this.$axios.get('/tags/all').then(
             respone => {
-                this.tags =  respone.body
+                //console.log(respone.data.data)
+                this.tags =  respone.data.data
             },
             respone => {
                 Message.error('数据出错，请重新刷新页面')
             }
-
         )
     },
     methods: {
         // 删除
         delectArticles: function(){
-            this.$http.post('/api/delect/article', {
+            this.$axios.post('/articles/delect/', {
                 _id : this.$route.query.id
             }).then(
                 respone => {
@@ -137,21 +141,15 @@ export default {
     	saveDraft: function(){
     	    var self = this
     	    if(this.$route.query.id){
-    	        // 更新
-    	        if(this.list.length>0){
-                    var labelName = this.list[0].tagName;
-                } else {
-                    var labelName = '未分类'
-                }
+    	        // 更新    	       
     	        var obj = {
     	            _id: this.$route.query.id,
                     title: self.articleTitle,
-                    articleContent: self.content,
+                    content: self.content,
                     date: new Date().format('yyyy-MM-dd hh:mm:ss'),
-                    state: 'draft',
-                    label: labelName
+                    state: 'draft'
                 }
-                this.$http.post('/api/updateArticle',{
+                this.$axios.post('/articles/' + this.$route.query.id, {
                     obj: obj
                 }).then(
                     respone => {
@@ -164,20 +162,14 @@ export default {
                     }
                 )
     	    } else {
-    	        // 新建保存
-    	        if(this.list.length>0){
-                    var labelName = this.list[0].tagName;
-                } else {
-                    var labelName = '未分类'
-                }
+    	        // 新建保存    	        
                 var obj = {
                     title: self.articleTitle,
                     articleContent: self.content,
                     date: new Date().format('yyyy-MM-dd hh:mm:ss'),
-                    state: 'draft',
-                    label: labelName
+                    state: 'draft'
                 }
-                this.$http.post('/api/saveArticle', {
+                this.$axios.post('/articles/add', {
                     articleInformation: obj
                 }).then(
                     respone => {
@@ -195,12 +187,6 @@ export default {
         publishedArticles: function(){
         	var self = this
         	if(this.$route.query.id){
-    	        // 更新
-    	        if(this.list.length>0){
-                    var labelName = this.list[0].tagName;
-                } else {
-                    var labelName = '未分类'
-                }
     	        var obj = {
     	            _id: this.$route.query.id,
                     title: self.articleTitle,
@@ -209,7 +195,7 @@ export default {
                     state: 'publish',
                     label: labelName
                 }
-                this.$http.post('/api/updateArticle',{
+                this.$axios.post('/api/updateArticle',{
                     obj: obj
                 }).then(
                     respone => {
@@ -222,12 +208,7 @@ export default {
                     }
                 )
     	    } else {
-    	        // 新建发布
-                if(this.list.length>0){
-                    var labelName = this.list[0].tagName
-                } else {
-                    var labelName = '未分类'
-                }
+    	        // 新建发布                
                 var obj = {
                     title: self.articleTitle,
                     articleContent: self.content,
@@ -235,7 +216,7 @@ export default {
                     state: 'publish',
                     label: labelName
                 }
-                this.$http.post('/api/saveArticle', {
+                this.$axios.post('/articles/add', {
                     articleInformation: obj
                 }).then(
                     respone => {
@@ -247,10 +228,14 @@ export default {
                 )
             }
         },
+        //选择tag
         selectTag: function(data){
-            this.list = []
-            this.list.push(data)
+            //this.list = []
+            if(this.list.indexOf(data) < 0){
+                this.list.push(data)
+            }            
         },
+        //移除tag
         handleClose: function(tag) {
             this.list.splice(this.tags.indexOf(tag), 1);
         }

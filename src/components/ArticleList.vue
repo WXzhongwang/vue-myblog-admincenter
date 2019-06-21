@@ -131,6 +131,28 @@ export default{
     padding-left: 12px;
     padding-right: 12px;
 }
+::-webkit-scrollbar
+{
+    width: 5px;
+    height: 16px;
+    background-color: #fff;
+}
+ 
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+    //-webkit-box-shadow: inset 0 0 3px rgba(0 , 0, 0, 0.8);
+    border-radius: 6px;
+    background-color: #fff;
+}
+ 
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb
+{
+    border-radius: 6px;
+    //-webkit-box-shadow: inset 0 0 3px rgba(0 , 0, 0, 0.8);
+    background-color: #fff;
+}
 .article-list > ul > li {
     border-bottom: 1px solid #f1f1f1;
     padding: 5px 10px 5px 10px;

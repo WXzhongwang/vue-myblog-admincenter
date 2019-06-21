@@ -19,10 +19,21 @@ Vue.use(VueResource);
 Vue.config.productionTip = false
 
 //axios.defaults.baseURL = 'http://mockjs.com' 
-axios.defaults.baseURL = 'http://localhost:8080/ssm' 
+axios.defaults.baseURL = 'http://localhost:8080/ssm' ;
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
+axios.defaults.transformRequest = [function (data) {
+    let ret = ''
+    for (let it in data) {
+      ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+    }
+    return ret
+}]
+
 Vue.prototype.$axios = axios
 
 const router = new VueRouter({
+  mode: 'history',
   routes: [
         { path: '/', component: PersonnalCenter },
         { path: '/articleLabel', component: ArticleLabel },

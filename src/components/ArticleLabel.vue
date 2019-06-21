@@ -13,7 +13,7 @@
                 </li>
             </ul>
             <el-input class="tagName-input" v-if="isTagInputShow" v-model="tagName" placeholder="请输入标签名添加">
-                <el-button slot="append" icon="check" @click="saveTagNema"></el-button>
+                <el-button slot="append" icon="check" @click="saveTagName"></el-button>
             </el-input>
         </div>
     </div>
@@ -48,33 +48,27 @@ export default{
         addArticLabel: function(){
             this.isTagInputShow = true;
         },
-        saveTagNema: function(){
+        saveTagName: function(){
             this.isTagInputShow = false;
             var obj = {
-                "Name": this.tagName,
-                "Description": this.tagName
+                name: this.tagName,
+                description: this.tagName
             }
-            alert(obj.Name)
             if(this.tagName){
-                this.$axios.post('/tags/save', obj, 
-                        { 
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(
+                this.$axios.post('/tags/new/save', obj).then(
                     response => {
-                        console.log(response.data);
                         if (response.data.succ){
                             Message.success('标签保存成功')
                             this.articleLabel.push(obj)
                             return;
                         }
-            		    
-                        
                     },
-                    response => Message.error('标签保存失败')
+                    response => {
+                        response => Message.error('标签保存失败')
+                    }
                 )
-            }
+                
+            } 
         }
     },
     directives: {

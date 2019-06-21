@@ -1,11 +1,11 @@
 <template>
     <div class="artivcle-preview">
         <transition name="fade" mode="out-in">
-            <div v-for="item in list" v-if="list.length>0">
+            <div v-for="item in list" v-if="list.length > 0">
                 <div class="atticle-title">{{item.title}}</div>
-                <div style="color:#34495e" v-compiledMarkdown>{{item.articleContent}}</div>
+                <div style="color:#34495e" v-compiledMarkdown>{{item.content}}</div>
                 <div class="article-preview-footer">
-                    <el-button type="primary" icon="edit" @click="modify(item._id)">不满意，点此修改</el-button>
+                    <el-button type="primary" icon="edit" @click="modify(item.id)">不满意，点此修改</el-button>
                 </div>
             </div>
         </transition>
@@ -46,11 +46,15 @@ export default{
         fetchData: function(){
             var id = this.$route.params.id
             this.list = []
-            this.$http.get('/api/articleDetails/'+ id).then(
+            this.$axios.get('/articles/'+ id).then(
                 respone => {
-                    this.list.push(respone.body)
+                    console.log(respone.data.data)
+                    this.list.push(respone.data.data)
                 },
-                respone => console.log('错误'+respone)
+                respone => {
+                    console.log('错误' + respone)
+                    Message.error('获取文章信息失败')
+                }
             )
         },
         modify: function(id){
