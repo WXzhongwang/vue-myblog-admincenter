@@ -19,7 +19,7 @@ Vue.use(VueResource);
 Vue.config.productionTip = false
 
 //axios.defaults.baseURL = 'http://mockjs.com' 
-axios.defaults.baseURL = 'http://localhost:8080/ssm' ;
+axios.defaults.baseURL = '/api';
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.headers.get['Content-Type'] = 'application/x-www-form-urlencoded';
 axios.defaults.transformRequest = [function (data) {

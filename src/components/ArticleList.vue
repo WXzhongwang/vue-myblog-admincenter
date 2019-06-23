@@ -60,11 +60,11 @@ export default{
         var param = localStorage.getItem("lebelTitle")
         if(param){
             localStorage.removeItem("lebelTitle")
-            this.$axios.post('api/admin/articleList', {
+            this.$axios.post('/articles/all', {
                 label: param
             }).then(
                 respone => {
-                    this.articleList = respone.body.reverse();
+                    this.articleList = respone.data.data;
                 },
                 respone => console.log(respone)
             )
@@ -93,7 +93,7 @@ export default{
         // 接受ArtcleEdit组件派发的事件去获取最新的文章列表
         refreshArticleList: function(){
             this.$axios.get('/articles/all').then(
-                respone => this.articleList = respone.body.reverse(),
+                respone => this.articleList = respone.data.data,
                 respone => console.log(respone)
             )
         },

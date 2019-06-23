@@ -124,9 +124,7 @@ export default {
     methods: {
         // 删除
         delectArticles: function(){
-            this.$axios.post('/articles/delete/', {
-                _id : this.$route.query.id
-            }).then(
+            this.$axios.get('/articles/delete/' + this.$route.query.id).then(
                 respone => {
                     this.$message('删除成功'),
                     this.$emit('saveArticleInformation'),
@@ -143,15 +141,13 @@ export default {
     	    if(this.$route.query.id){
     	        // 更新    	       
     	        var obj = {
-    	            _id: this.$route.query.id,
+    	            ID: this.$route.query.id,
                     title: self.articleTitle,
                     content: self.content,
                     createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
                     state: 'draft'
                 }
-                this.$axios.post('/articles/add' + this.$route.query.id, {
-                    article: obj
-                }).then(
+                this.$axios.post('/articles/update' , obj).then(
                     respone => {
                         Message.success('文章保存成功')
                         // 如果文章信息保存成功就给父组件派发一个事件通知它刷新文章列表
@@ -165,12 +161,12 @@ export default {
     	        // 新建保存    	        
                 var obj = {
                     title: self.articleTitle,
-                    articleContent: self.content,
-                    date: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                    content: self.content,
+                    createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
                     state: 'draft'
                 }
                 this.$axios.post('/articles/add', {
-                    articleInformation: obj
+                    article: obj
                 }).then(
                     respone => {
                         Message.success('文章保存成功')
@@ -195,7 +191,7 @@ export default {
                     state: 'publish',
                     label: labelName
                 }
-                this.$axios.post('/api/updateArticle',{
+                this.$axios.post('/articles/update/ + this.$route.query.id',{
                     obj: obj
                 }).then(
                     respone => {
