@@ -77,7 +77,7 @@ export default{
             this.$axios.get('/articles/all').then(
                 respone => {
                     this.articleList = respone.data.data;
-                    console.log(respone.data.data);
+                    //console.log(respone.data.data);
                 },
                 respone => console.log(respone)
             )

@@ -94,14 +94,14 @@ export default {
             this.$axios.get('/articles/' + this.$route.query.id).then(
                 respone => {
                     let articleDetail = respone.data.data
-                    this.articleTitle = articleDetail.title,
-                    articleDetail.tags.forEach(function(item, index){
-                        //this.list.push({
-                        //    tagName: item.name
-                        //})
-                        this.list.push(item);
-                    })
-                    
+                    this.articleTitle = articleDetail.title
+                    for(let  i = 0; i< articleDetail.tags.length; i++){
+                        this.list.push({
+                            id: articleDetail.tags[i].id,
+                            name: articleDetail.tags[i].name
+                        })
+                    }
+                    //this.list = articleDetail.tags
                     smde.value(articleDetail.content)
                 },
                 respone => console.log(respone)
@@ -124,7 +124,7 @@ export default {
     methods: {
         // 删除
         delectArticles: function(){
-            this.$axios.post('/articles/delect/', {
+            this.$axios.post('/articles/delete/', {
                 _id : this.$route.query.id
             }).then(
                 respone => {
@@ -146,11 +146,11 @@ export default {
     	            _id: this.$route.query.id,
                     title: self.articleTitle,
                     content: self.content,
-                    date: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                    createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
                     state: 'draft'
                 }
-                this.$axios.post('/articles/' + this.$route.query.id, {
-                    obj: obj
+                this.$axios.post('/articles/add' + this.$route.query.id, {
+                    article: obj
                 }).then(
                     respone => {
                         Message.success('文章保存成功')
@@ -230,10 +230,13 @@ export default {
         },
         //选择tag
         selectTag: function(data){
-            //this.list = []
-            if(this.list.indexOf(data) < 0){
-                this.list.push(data)
-            }            
+            for(let  i = 0; i< this.list.length; i++){
+               if(this.list[i].name == data.name && this.list[i].id == data.id){
+                Message.warning('已经加过此标签了')
+                return;
+               }
+            }  
+            this.list.push(data) 
         },
         //移除tag
         handleClose: function(tag) {
