@@ -101,7 +101,6 @@ export default {
                             name: articleDetail.tags[i].name
                         })
                     }
-                    //this.list = articleDetail.tags
                     smde.value(articleDetail.content)
                 },
                 respone => console.log(respone)
@@ -145,9 +144,15 @@ export default {
                     title: self.articleTitle,
                     content: self.content,
                     createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
-                    state: 'draft'
+                    state: 'draft',
+                    tags: this.list
                 }
-                this.$axios.post('/articles/update' , obj).then(
+                //console.log(JSON.stringify(obj))
+                this.$axios.post('/articles/update' , JSON.stringify(obj), {
+                    headers: {
+                    'Content-Type': 'application/json;charset=UTF-8'
+                    }
+                }).then(
                     respone => {
                         Message.success('文章保存成功')
                         // 如果文章信息保存成功就给父组件派发一个事件通知它刷新文章列表
@@ -163,7 +168,8 @@ export default {
                     title: self.articleTitle,
                     content: self.content,
                     createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
-                    state: 'draft'
+                    state: 'draft',
+                    tags: this.list
                 }
                 this.$axios.post('/articles/add', {
                     article: obj
@@ -184,33 +190,31 @@ export default {
         	var self = this
         	if(this.$route.query.id){
     	        var obj = {
-    	            _id: this.$route.query.id,
+    	            ID: this.$route.query.id,
                     title: self.articleTitle,
-                    articleContent: self.content,
-                    date: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                    content: self.content,
+                    createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
                     state: 'publish',
-                    label: labelName
+                    tags: this.list
                 }
-                this.$axios.post('/articles/update/ + this.$route.query.id',{
-                    obj: obj
-                }).then(
+                this.$axios.post('/articles/update', obj).then(
                     respone => {
                         Message.success('文章发布成功')
                         // 如果文章信息保存成功就给父组件派发一个事件通知它刷新文章列表
                         self.$emit('saveArticleInformation')
                     },
                     respone => {
-                        Message.error('文章发布成功')
+                        Message.error('文章发布失败')
                     }
                 )
     	    } else {
     	        // 新建发布                
-                var obj = {
+                var obj = {                    
                     title: self.articleTitle,
-                    articleContent: self.content,
-                    date: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                    content: self.content,
+                    createtime: new Date().format('yyyy-MM-dd hh:mm:ss'),
                     state: 'publish',
-                    label: labelName
+                    tags: this.list
                 }
                 this.$axios.post('/articles/add', {
                     articleInformation: obj
